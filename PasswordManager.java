@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.security.SecureRandom;
 
 public class PasswordManager {
@@ -78,7 +79,8 @@ public class PasswordManager {
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
-        
+        password = checkPassword(password);
+
         try (FileWriter fw = new FileWriter(FILE_PATH, true)) {
             fw.write("USER|" + username + "|" + password + "\n");
             System.out.println("User created successfully!");
@@ -118,7 +120,8 @@ public class PasswordManager {
         String username = scanner.nextLine();
         System.out.print("Enter password (or type 'generate' for auto-generated): ");
         String password = scanner.nextLine();
-        
+        password = checkPassword(password);
+
         if (password.equalsIgnoreCase("generate")) {
             password = generatePassword();
         }
@@ -251,6 +254,53 @@ public class PasswordManager {
         }
         
         return password.toString();
+    }
+
+    private static String checkPassword(String password){
+        boolean plength = false; 
+        boolean pcapital = false;
+        boolean plower = false;
+        boolean pspecial = false;   
+        boolean pnumber = false;
+        while(!plength || !pcapital || !plower || !pspecial){
+            System.out.println(password);
+            plength = false; 
+            plower = false;
+            pcapital = false;
+            pspecial = false; 
+            pnumber = false;
+            if(password.length()<8){
+                System.out.println("Password needs to be 8 characters long");
+                password = scanner.nextLine();
+            }else{
+                plength = true;
+            }
+            if(!(password.matches(".*\\d.*"))){
+                System.out.println("Password needs to contain at least one number");
+                password = scanner.nextLine();
+            }else{
+                pnumber = true;
+            }
+            if(!(password.matches(".*[A-Z].*"))){
+                System.out.println("Password needs to contain at least one upper case letter");
+                password = scanner.nextLine();
+            }else{
+                pcapital = true;
+            }
+            if(!(password.matches(".*[a-z].*"))){
+                System.out.println("Password needs to contain at least one lower case letter");
+                password = scanner.nextLine();
+            }else{
+                plower = true;
+            }
+            if(!(password.matches(".*[!@#$%&*()_+=|<>?{}\\[\\]~-].*"))){
+                System.out.println("Password needs to contain at least one special character");
+                password = scanner.nextLine();
+            }else{
+                pspecial = true;
+            }
+        }
+        return password;
     }
 
     private static int getIntInput(String prompt) {
